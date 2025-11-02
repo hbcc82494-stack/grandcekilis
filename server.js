@@ -1,4 +1,4 @@
-// server.js — Grand Çekiliş (sqlite3 ile tam sürüm)
+// server.js — Grand Çekiliş (sqlite3 ile temiz sürüm)
 
 // --- Core imports ---
 import fs from 'fs';
@@ -83,6 +83,7 @@ await run(`
     ts TEXT
   )
 `);
+
 // --- Layout helper for HTML ---
 function layout(title, body, extraHead=''){
   return `<!doctype html>
@@ -139,13 +140,17 @@ app.post('/admin/login', async (req,res)=>{
 
 // --- Admin Logout ---
 app.get('/admin/logout', (req,res)=>{
-  req.session.destroy(()=> res.redirect('/admin/login'));
+  req.session.
+    destroy(()=> res.redirect('/admin/login'));
 });
+
 // --- Admin Dashboard (after login) ---
 app.get('/admin', requireAuth, async (req,res)=>{
+  // SQL tek tırnak içinde (backtick değil)
   const draws = await all(
-    SELECT id,title,created_at,winners_count FROM draws ORDER BY created_at DESC LIMIT 50
+    'SELECT id,title,created_at,winners_count FROM draws ORDER BY created_at DESC LIMIT 50'
   );
+
   const body = `
   <div class="card">
     <h2>Yeni Çekiliş Oluştur</h2>
@@ -203,6 +208,7 @@ function parseAmounts(text){
   if(!text) return [];
   return text.split(',').map(s=>s.trim()).filter(Boolean).map(x=>parseInt(x.replace(/[^\d]/g,''),10)).filter(x=>!isNaN(x));
 }
+
 // --- Create Draw (POST) ---
 app.post('/admin/create', requireAuth, async (req,res)=>{
   try{
@@ -235,11 +241,11 @@ app.post('/admin/create', requireAuth, async (req,res)=>{
     const created_at = new Date().toISOString().replace('T',' ').slice(0,19);
 
     await run(
-      INSERT INTO draws (id,title,created_at,winners_count,result_json) VALUES (?,?,?,?,?),
+      'INSERT INTO draws (id,title,created_at,winners_count,result_json) VALUES (?,?,?,?,?)',
       [id, title, created_at, winnersCount, JSON.stringify(final)]
     );
     await run(
-      INSERT INTO audit(draw_id, action, ts) VALUES (?,?,?),
+      'INSERT INTO audit(draw_id, action, ts) VALUES (?,?,?)',
       [id,'create', created_at]
     );
 
@@ -254,7 +260,7 @@ app.post('/admin/create', requireAuth, async (req,res)=>{
 // --- Public Result Page ---
 app.get('/r/:id', async (req,res)=>{
   const id = req.params.id;
-  const row = await get(`SELECT * FROM draws WHERE id=?`, [id]);
+  const row = await get('SELECT * FROM draws WHERE id=?', [id]);
   if(!row){
     return res.status(404).send(layout('Bulunamadı', `<div class="alert">Çekiliş bulunamadı</div>`));
   }

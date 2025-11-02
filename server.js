@@ -1,5 +1,3 @@
-// server.js — Grand Çekiliş (TR) — Düzeltilmiş Sürüm ✅
-
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
@@ -133,9 +131,7 @@ app.get('/admin', requireAuth, async (req,res)=>{
         <div>
           <label>İsimler (her satıra 1)</label>
           <textarea name="names" rows="10" required placeholder="Ad Soyad"></textarea>
-
-> Doğan:
-</div>
+          </div>
         <div>
           <label>Tutarlar (virgülle ayır)</label>
           <input name="amounts" placeholder="50,100,200,500"/>
@@ -219,7 +215,33 @@ app.post('/admin/create', requireAuth, async (req,res)=>{
 app.get('/r/:id', async (req,res)=>{
   const id = req.params.id;
   const row = await db.get(`SELECT * FROM draws WHERE id=?`, [id]);
-  if(!row){ return res.status(404).send(layout('Bulunamadı', `<div class="alert">Çekiliş bulunamadı</div>`)); }
+  if(!row){ return res.status(404).send(layout('Bulunamadı', `<
+  replace(/[&<>"]/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[c]); }
+    const names = winners.map(w => w.name + ' — ' + w.amount + '₺');
+    let t = 0;
+    const spin = setInterval(()=>{
+      const idx = Math.floor(Math.random()*names.length);
+      animBox.textContent = names[idx];
+      t += 1;
+    }, 90);
+    setTimeout(()=>{
+      clearInterval(spin);
+      animBox.textContent = 'Kazananlar görüntüleniyor...';
+      setTimeout(()=>{
+        animBox.style.display = 'none';
+        reveal();
+      }, 600);
+    }, 3200 + Math.floor(Math.random()*1200));
+  </script>
+  `;
+  res.send(layout('Çekiliş Sonucu', body));
+});
+
+// --- Root ---
+app.get('/', (req,res)=> res.redirect('/admin/login'));
+
+// --- Start ---
+app.listen(PORT, ()=> console.log('Grand Çekiliş çalışıyor → http://localhost:'+PORT));div class="alert">Çekiliş bulunamadı</div>`)); }
   const title = row.title || 'Çekiliş Sonucu';
   const winners = JSON.parse(row.result_json);
   const body = `

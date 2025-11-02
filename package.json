@@ -15,7 +15,7 @@
     "express": "^4.19.2",
     "express-session": "^1.17.3",
     "nanoid": "^5.0.7",
-    "sqlite": "^5.2.4",
+    "sqlite": "^5.1.6",
     "sqlite3": "^5.1.7"
   }
 }
